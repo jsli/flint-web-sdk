@@ -28,10 +28,10 @@ class PluginLoader
         #   common
         platform = Platform.getPlatform()
         plugin = null
-        switch platform.browser
-        #   only support 'NPAPI' plugin for now
-            when 'firefox', 'chrome', 'safari', 'msie'
-                plugin = NPAPIPlugin.getPlugin()
+#        switch platform.browser
+#        #   only support 'NPAPI' plugin for now
+#            when 'firefox', 'chrome', 'safari', 'msie'
+#                plugin = NPAPIPlugin.getPlugin()
 
         if not plugin
             plugin = FakePlugin.getPlugin()

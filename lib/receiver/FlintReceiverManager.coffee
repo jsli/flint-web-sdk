@@ -46,7 +46,7 @@ class FlintReceiverManager extends EventEmitter
             return
 
         # open MessageChannel before opening IPC
-        @defMessageChannel.open()
+#        @defMessageChannel.open()
 
         @ipcChannel = new MessageChannel 'ipc', @ipcAddress
         @ipcChannel.on 'open', (event) =>
@@ -74,6 +74,7 @@ class FlintReceiverManager extends EventEmitter
                 console.error 'error: ', e
 
         @ipcChannel.open()
+        @defMessageChannel.open()
 
     _onIpcMessage: (data) ->
         switch data.type
@@ -109,7 +110,7 @@ class FlintReceiverManager extends EventEmitter
                 @emit 'senderdisconnected', data.token
                 console.info 'IPC senderdisconnected: ', data.token
             else
-                console.error 'unknow type: ', data.type
+                console.error 'IPC unknow type: ', data.type
 
     setAdditionalData: (additionaldata) ->
         console.info "set custom additionaldata: ", additionaldata
@@ -138,9 +139,6 @@ class FlintReceiverManager extends EventEmitter
         if @_isStarted()
             @_ipcSend
                 type: 'unregister'
-            for _, channel of @messageChannels
-                channel.close()
-            @messageChannels = null
             @defMessageChannel = null
             @messageBusList = null
             @ipcChannel?.close()
@@ -155,6 +153,12 @@ class FlintReceiverManager extends EventEmitter
         if not @defMessageChannel
             url = 'ws://127.0.0.1:9439/channels/' + FlintConstants.DEFAULT_CHANNEL_NAME
             @defMessageChannel = new ReceiverMessageChannel FlintConstants.DEFAULT_CHANNEL_NAME, url
+            @defMessageChannel.on 'open', (event) =>
+                console.log 'Receiver default message channel open!!! ', event
+            @defMessageChannel.on 'close', (event) =>
+                console.log 'Receiver default message channel open!!! ', event
+            @defMessageChannel.on 'error', (event) =>
+                console.log 'Receiver default message channel open!!! ', event
         return @defMessageChannel
 
     #

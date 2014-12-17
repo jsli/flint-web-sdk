@@ -102,7 +102,7 @@ class FlintSenderManager extends EventEmitter
             items = additionalData[0].childNodes
             if items
                 _tmpAdditionalData = {}
-                for i in [0 .. items.length - 1]
+                for i of items
                     if items[i].tagName and items[i].innerHTML
                         _tmpAdditionalData[items[i].tagName] = items[i].innerHTML
                 changed = false
@@ -280,12 +280,21 @@ class FlintSenderManager extends EventEmitter
     _createMessageChannel: ->
         if not @defMessageChannel
             @defMessageChannel = new SenderMessageChannel FlintConstants.DEFAULT_CHANNEL_NAME
+            @defMessageChannel.on 'open', () =>
+                console.log 'sender message channel open!!!'
+            @defMessageChannel.on 'close', () =>
+                console.log 'sender message channel close!!!'
+            @defMessageChannel.on 'error', () =>
+                console.log 'sender message channel error!!!'
             @_openMessageChannel @defMessageChannel
         return @defMessageChannel
 
     _openMessageChannel: (channel) ->
         @.once channel.getName() + 'available', (channelUrl) =>
-            channel.open channelUrl + '/senders/' + @token
+            console.log 'available: ', channel.getName() + 'available'
+            url = channelUrl + '/senders/' + @token
+            console.log channel.getName(), ' open url: ', url
+            channel.open url
 
     createMessageBus: (namespace) ->
         if not namespace

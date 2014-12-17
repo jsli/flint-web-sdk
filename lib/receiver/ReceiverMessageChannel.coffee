@@ -20,7 +20,7 @@ class ReceiverMessageChannel extends MessageChannel
 
     constructor: (name, url) ->
         super name, url
-        @senders = []
+        @senders = {}
 
     _initOnMessage: ->
         @wsChannel.onmessage = (event) =>
@@ -30,17 +30,17 @@ class ReceiverMessageChannel extends MessageChannel
                 data = JSON.parse event.data
                 switch data.type
                     when 'senderConnected'
-                        @senders.push data.senderId
+                        @senders[data.senderId] = data.senderId
                         @emit 'senderConnected', data.senderId
                     when 'senderDisconnected'
-                        @senders.remove data.senderId
+                        delete @senders[data.senderId]
                         @emit 'senderDisconnected', data.senderId
                     when 'message'
                         @emit 'message', data.data, data.senderId
                     when 'error'
                         @emit 'error', data.message
                     else
-                        console.warn 'unknow data.type'
+                        console.warn 'ReceiverMessageChannel unknow data.type: ', event.data
             catch e
                 console.error 'ReceiverMessageChannel on message error: ', e
 
