@@ -15,8 +15,8 @@
 #
 
 # TODO: change plugin's name
-PLUGIN_NAME = 'sockit'
-PLUGIN_MIME_TYPE = 'application/x-sockit'
+PLUGIN_NAME = 'flintplugin'
+PLUGIN_MIME_TYPE = 'application/x-flintplugin'
 PLUGIN_LOCATION = 'http://sockit.github.com/downloads.html'
 
 class NPAPIPlugin
@@ -29,7 +29,9 @@ class NPAPIPlugin
 
             if navigator.mimeTypes
                 for index, mime of navigator.mimeTypes
-                    if mime is NPAPIPlugin.PLUGIN_MIME_TYPE
+#                    console.log 'find ', NPAPIPlugin.PLUGIN_MIME_TYPE, ": ", mime.type
+                    if mime.type is PLUGIN_MIME_TYPE
+                        console.log 'find ', PLUGIN_MIME_TYPE, ": ", mime.type
                         pluginAvailable = true
             else
                 console.warn 'navigator.mimeTypes is null'
@@ -37,15 +39,16 @@ class NPAPIPlugin
             if not pluginAvailable
                 redirect = confirm PLUGIN_NAME + ' plugin is not currently installed, would you like to be redirected to the SockIt plugin download page?'
                 if redirect
-                    window.location = NPAPIPlugin.PLUGIN_LOCATION
+                    window.location = PLUGIN_LOCATION
             else
                 plugin = document.createElement 'object'
-                plugin.setAttribute 'type', NPAPIPlugin.PLUGIN_MIME_TYPE
+                plugin.setAttribute 'type', PLUGIN_MIME_TYPE
                 plugin.setAttribute 'style', 'width: 0; height: 0;'
                 document.documentElement.appendChild plugin
-#                window[NPAPIPlugin.PLUGIN_NAME] = plugin
+                window[PLUGIN_NAME] = plugin
                 NPAPIPlugin.plugin = plugin
         return NPAPIPlugin.plugin
+        return null
 
     constructor: ->
         null

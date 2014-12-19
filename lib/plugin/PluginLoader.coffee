@@ -27,14 +27,19 @@ class PluginLoader
         #   npapi
         #   common
         platform = Platform.getPlatform()
+        console.info 'Platform is : ', platform.browser
         plugin = null
-#        switch platform.browser
-#        #   only support 'NPAPI' plugin for now
-#            when 'firefox', 'chrome', 'safari', 'msie'
-#                plugin = NPAPIPlugin.getPlugin()
-
-        if not plugin
-            plugin = FakePlugin.getPlugin()
-        return plugin
+        switch platform.browser
+            when 'firefox'
+                ffos = (window.MozActivity isnt undefined)
+                if ffos
+                    console.info 'Platform is : FFOS',
+                        plugin = FakePlugin.getPlugin()
+                else
+                    plugin = NPAPIPlugin.getPlugin()
+            when 'chrome', 'safari', 'msie'
+                plugin = NPAPIPlugin.getPlugin()
+            else
+                plugin = FakePlugin.getPlugin()
 
 module.exports = PluginLoader
