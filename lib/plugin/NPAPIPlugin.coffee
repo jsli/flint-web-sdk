@@ -25,30 +25,24 @@ class NPAPIPlugin
 
     @getPlugin: ->
         if not NPAPIPlugin.plugin
-            pluginAvailable = false
-
             if navigator.mimeTypes
                 for index, mime of navigator.mimeTypes
-#                    console.log 'find ', NPAPIPlugin.PLUGIN_MIME_TYPE, ": ", mime.type
                     if mime.type is PLUGIN_MIME_TYPE
-                        console.log 'find ', PLUGIN_MIME_TYPE, ": ", mime.type
-                        pluginAvailable = true
+                        console.log 'create NPAPI plugin'
+                        plugin = document.createElement 'object'
+                        plugin.setAttribute 'type', PLUGIN_MIME_TYPE
+                        plugin.setAttribute 'style', 'width: 0; height: 0;'
+                        document.documentElement.appendChild plugin
+                        window[PLUGIN_NAME] = plugin
+                        NPAPIPlugin.plugin = plugin
+                        return NPAPIPlugin.plugin
             else
                 console.warn 'navigator.mimeTypes is null'
-
-            if not pluginAvailable
-                redirect = confirm PLUGIN_NAME + ' plugin is not currently installed, would you like to be redirected to the SockIt plugin download page?'
-                if redirect
-                    window.location = PLUGIN_LOCATION
-            else
-                plugin = document.createElement 'object'
-                plugin.setAttribute 'type', PLUGIN_MIME_TYPE
-                plugin.setAttribute 'style', 'width: 0; height: 0;'
-                document.documentElement.appendChild plugin
-                window[PLUGIN_NAME] = plugin
-                NPAPIPlugin.plugin = plugin
-        return NPAPIPlugin.plugin
-        return null
+                return null
+            console.warn 'cannot load NPAPI plugin'
+            return null
+        else
+            return NPAPIPlugin.plugin
 
     constructor: ->
         null

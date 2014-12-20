@@ -20,7 +20,12 @@ Platform = require '../common/Platform'
 
 class PluginLoader
 
+    @DEBUG = true
+
     @getPlugin: ->
+        if PluginLoader.DEBUG
+            return FakePlugin.getPlugin()
+
         # load order:
         #   browser specical
         #   browser plugin

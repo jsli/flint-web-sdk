@@ -274,6 +274,7 @@ class FlintSenderManager extends EventEmitter
 
     # callback = => (statusCode, responseText)
     _request: (method, url, headers, data, callback) ->
+        console.log 'request: method -> ', method, ', url -> ', url, ', headers -> ', headers
         xhr = new XHRWrapper PluginLoader
         xhr.request method, url, headers, data, callback
 

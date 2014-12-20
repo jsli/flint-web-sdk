@@ -2,6 +2,7 @@
   "name": "screen-sharing-sample",
   "version": "0.1.0",
   "dependencies": {
+    "js-base64": "2.1.5",
     "eventemitter3": "^0.1.5",
     "js-binarypack": "0.0.9",
     "reliable": "git+https://github.com/michelle/reliable.git"
