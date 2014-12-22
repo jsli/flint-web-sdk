@@ -18,7 +18,6 @@ EventEmitter = require 'eventemitter3'
 SenderMessageChannel = require './SenderMessageChannel'
 SenderMessageBus = require './SenderMessageBus'
 Peer = require '../peerjs/peer'
-XhrWrapper = require '../common/XhrWrapper'
 PluginLoader = require '../plugin/PluginLoader'
 FlintConstants = require '../common/FlintConstants'
 

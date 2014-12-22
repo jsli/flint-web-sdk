@@ -23,10 +23,16 @@ class SSDPManager extends EventEmitter
         options =
             st: 'urn:dial-multiscreen-org:service:dial:1'
         @ssdp = PluginLoader.getPlugin().createSSDPResponder options
-        @ssdp.on 'devicealive', (device) =>
-            @emit 'adddevice', device
-        @ssdp.on 'devicebyebye', (uniqueId) =>
-            @emit 'removedevice', uniqueId
+        @ssdp.addEventListener 'serviceFound', (data) =>
+            console.error 'ssdp found: -> ', data
+        @ssdp.addEventListener 'serviceLost', (data) =>
+            console.error 'ssdp lost: -> ', data
+        @ssdp.search "urn:dial-multiscreen-org:service:dial:1"
+
+#        @ssdp.on 'devicealive', (device) =>
+#            @emit 'adddevice', device
+#        @ssdp.on 'devicebyebye', (uniqueId) =>
+#            @emit 'removedevice', uniqueId
 
     start: ->
         @ssdp.start()
