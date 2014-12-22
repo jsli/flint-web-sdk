@@ -20,7 +20,7 @@ Platform = require '../common/Platform'
 
 class PluginLoader
 
-    @DEBUG = true
+    @DEBUG = false
 
     @getPlugin: ->
         if PluginLoader.DEBUG
@@ -35,14 +35,9 @@ class PluginLoader
         console.info 'Platform is : ', platform.browser
         plugin = null
         switch platform.browser
-            when 'firefox'
-                ffos = (window.MozActivity isnt undefined)
-                if ffos
-                    console.info 'Platform is : FFOS',
-                        plugin = FakePlugin.getPlugin()
-                else
-                    plugin = NPAPIPlugin.getPlugin()
-            when 'chrome', 'safari', 'msie'
+            when 'ffos'
+                plugin = FakePlugin.getPlugin()
+            when 'firefox', 'chrome', 'safari', 'msie'
                 plugin = NPAPIPlugin.getPlugin()
             else
                 plugin = FakePlugin.getPlugin()

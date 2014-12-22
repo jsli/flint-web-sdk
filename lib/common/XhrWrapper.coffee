@@ -14,81 +14,59 @@
 # limitations under the License.
 #
 
-#Base64 = require 'js-base64'.Base64
 Base64 = require('js-base64').Base64
 
-class XHRWrapper
+class XhrWrapper
 
     constructor: (pluginLoader) ->
         @proxy = false
 
-        @xhrObj = pluginLoader.getPlugin().createXMLHttpRequest()
+        plugin = pluginLoader.getPlugin()
+        @xhrObj = plugin.createXMLHttpRequest()
         if not @xhrObj
             throw 'createXMLHttpRequest failed!!!'
 
+        if @xhrObj.setOnReadyStateChangeCallback
+            @proxy = true
+            console.error '################proxy'
+
         if @proxy
             callback = =>
+                @xhrObj.readyState = @xhrObj.getReadyState()
+                @xhrObj.status = @xhrObj.getStatus()
+                @xhrObj.statusText = @xhrObj.getStatusText()
+                @xhrObj.responseText = Base64.decode @xhrObj.getResponseText()
                 if @xhrObj.onreadystatechange
                     @xhrObj.onreadystatechange()
             callback.bind @
             @xhrObj.setOnReadyStateChangeCallback callback
 
-    open: (method, url) ->
-        @xhrObj.open method, url, true
-
-    send: (data) ->
-        console.info 'send: ', data
-        @xhrObj.send (data or '')
-
-    setRequestHeader: (headerKey, headerValue) ->
-        @xhrObj.setRequestHeader headerKey, headerValue
-
-    getResponseHeader: (headerKey) ->
-        return @xhrObj.getResponseHeader headerKey
-
-    getResponseText: ->
-        return @xhrObj.getResponseText()
-
-    getStatus: ->
-        return @xhrObj.getStatus()
-
-    getReadyState: ->
-        return @xhrObj.getReadyState()
-
-    getStatusText: ->
-        return @xhrObj.getStatusText()
-
-    getAllResponseHeaders: ->
-        return @xhrObj.getAllResponseHeaders()
-
     #
     # callback: (statusCode, responseText) =>
     #
     request: (method, url, headers, data, callback) ->
-        @xhrObj.timeout = 3 * 1000
-        @open method, url
+        if not @proxy
+            @xhrObj.timeout = 3 * 1000
+        @xhrObj.open method, url
         if headers
             for key, value of headers
-                @setRequestHeader key, value
+                @xhrObj.setRequestHeader key, value
 
         @xhrObj.onreadystatechange = =>
-            @readyState = @getReadyState()
-            if @readyState is 4
-                @status = @getStatus()
-                @statusText = @getStatusText()
-                responseText = @getResponseText()
-                @responseText = Base64.decode responseText
-                console.info 'received: ', @responseText
-                callback? @status, @responseText
+            console.info '1received: ', @xhrObj.getResponseText()
+            console.error 'ready state ---------- ', @xhrObj.readyState
+            if @xhrObj.readyState is 4
+                console.info 'received: ', @xhrObj.responseText
+                callback? @xhrObj.status, @xhrObj.responseText
 
-        @xhrObj.onerror = =>
-            console.error 'XHRWrapper Error: ', method, ' - ', url, ' - ', data
-            callback? -1, 'error'
+        if not @proxy
+            @xhrObj.onerror = =>
+                console.error 'XhrWrapper Error: ', method, ' - ', url, ' - ', data
+                callback? -1, 'error'
 
-        @send JSON.stringify(data)
-#        if data
-#            @xhrObj.send JSON.stringify(data)
-#        else
-#            @xhrObj.send("")
+        if data
+            @xhrObj.send JSON.stringify(data)
+        else
+            @xhrObj.send ''
 
-module.exports = XHRWrapper
+module.exports = XhrWrapper

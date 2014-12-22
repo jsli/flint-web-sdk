@@ -44,7 +44,7 @@ class NPAPIPlugin
         else
             return NPAPIPlugin.plugin
 
-    constructor: ->
-        null
+    @getName: ->
+        return 'NPAPI'
 
 module.exports = NPAPIPlugin

@@ -23,10 +23,15 @@ class Platform
         if not Platform.detector
             Platform.detector = new BrowserDetect()
             Platform.detector.init()
+            if Platform.detector.browser.toLowerCase() is 'firefox'
+                if window.MozActivity isnt undefined
+                    Platform.detector.browser = 'ffos'
+
         platform =
             browser: Platform.detector.browser.toLowerCase()
             version: Platform.detector.version.toLowerCase()
             os: Platform.detector.OS.toLowerCase()
+
         return platform
 
 module.exports = Platform

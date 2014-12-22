@@ -16,7 +16,7 @@
 
 EventEmitter = require 'eventemitter3'
 PluginLoader = require '../../plugin/PluginLoader'
-XHRWrapper = require '../../common/XHRWrapper'
+XhrWrapper = require '../../common/XhrWrapper'
 SSDPDevice = require './SSDPDevice'
 
 SEARCH_INTERVAL = 5 * 1000
@@ -127,7 +127,7 @@ class NormalSSDPResponder extends EventEmitter
                 @emit 'devicebyebye', headers.udn
 
     _fetchDeviceDesc: (url) ->
-        xhr = new XHRWrapper PluginLoader
+        xhr = new XhrWrapper PluginLoader
         xhr.request 'GET', url, null, null, (statusCode, responseText) =>
             if statusCode is 200
                 @_parseDeviceDesc responseText

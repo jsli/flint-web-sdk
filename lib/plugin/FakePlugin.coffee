@@ -28,6 +28,9 @@ class FakePlugin
             FakePlugin.plugin = new FakePlugin()
         return FakePlugin.plugin
 
+    @getName: ->
+        return 'fake'
+
     constructor: ->
         null
 

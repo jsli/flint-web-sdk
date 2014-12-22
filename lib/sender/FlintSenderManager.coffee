@@ -18,7 +18,7 @@ EventEmitter = require 'eventemitter3'
 SenderMessageChannel = require './SenderMessageChannel'
 SenderMessageBus = require './SenderMessageBus'
 Peer = require '../peerjs/peer'
-XHRWrapper = require '../common/XHRWrapper'
+XhrWrapper = require '../common/XhrWrapper'
 PluginLoader = require '../plugin/PluginLoader'
 FlintConstants = require '../common/FlintConstants'
 
@@ -275,7 +275,7 @@ class FlintSenderManager extends EventEmitter
     # callback = => (statusCode, responseText)
     _request: (method, url, headers, data, callback) ->
         console.log 'request: method -> ', method, ', url -> ', url, ', headers -> ', headers
-        xhr = new XHRWrapper PluginLoader
+        xhr = new XhrWrapper PluginLoader
         xhr.request method, url, headers, data, callback
 
     _createMessageChannel: ->
