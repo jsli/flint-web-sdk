@@ -14,57 +14,64 @@
 # limitations under the License.
 #
 
-Base64 = require('js-base64').Base64
-
 class WsWrapper
+
+    # Websocket connection's state code
+    CONNECTING = 0 # The connection is not yet open.
+    OPEN = 1 # The connection is open and ready to communicate.
+    CLOSING = 2 # The connection is in the process of closing.
+    CLOSED = 3 # The connection is closed or couldn't be opened.
 
     constructor: (pluginLoader, @url) ->
         @proxy = false
 
         plugin = pluginLoader.getPlugin()
-        console.error plugin
-        console.error plugin.createWebSocket
-        console.error plugin.createXMLHttpRequest
-        @wsObj = plugin.createWebSocket(url)
+        @wsObj = plugin.createWebSocket url
         if not @wsObj
             throw 'createWebSocket failed!!!'
 
         if @wsObj.addEventListener
-            console.error '#############'
             @proxy = true
-        else
-            console.error '@@@@@@@@@@@@@@@@@'
 
         if @proxy
+            @readyState = CONNECTING
+
             # setup 'open' callback
             openCallback = =>
+                @readyState = OPEN
                 if @onopen
                     @onopen()
-            openCallback.bind @
             @wsObj.addEventListener 'open', openCallback
 
             # setup 'close' callback
             closeCallback = =>
+                @readyState = CLOSED
                 if @onclose
                     @onclose()
-            closeCallback.bind @
             @wsObj.addEventListener 'close', closeCallback
+
+            # setup 'error' callback
+            errorCallback = =>
+                @readyState = CLOSED
+                if @onerror
+                    @onerror()
+            @wsObj.addEventListener 'error', errorCallback
 
             # setup 'message' callback
             messageCallback = (data)=>
                 if @onmessage
                     @onmessage
                         data: data
-            messageCallback.bind @
             @wsObj.addEventListener 'message', messageCallback
 
             # open websocket
             @wsObj.open()
 
     send: (data) ->
-        @wsObj.send data
+        @wsObj.send (data or '')
 
     close: ->
+        @readyState = CLOSING
         @wsObj.close()
 
 module.exports = WsWrapper

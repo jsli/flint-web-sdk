@@ -39,7 +39,7 @@ class XhrWrapper
                     @xhrObj.responseText = Base64.decode respondText
                     if @xhrObj.onreadystatechange
                         @xhrObj.onreadystatechange()
-            #            _callback.bind @
+            # _callback.bind @
             @xhrObj.setOnReadyStateChangeCallback _callback
 
     #
@@ -56,7 +56,7 @@ class XhrWrapper
 
         @xhrObj.onreadystatechange = =>
             if @xhrObj.readyState is 4
-                console.error ' received:\n', @xhrObj.responseText
+                # console.error ' received:\n', @xhrObj.responseText
                 callback? @xhrObj.status, @xhrObj.responseText
 
         if not @proxy

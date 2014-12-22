@@ -16,7 +16,6 @@
 
 EventEmitter = require 'eventemitter3'
 PluginLoader = require '../plugin/PluginLoader'
-WsWrapper = require './WsWrapper'
 
 class MessageChannel extends EventEmitter
 
@@ -39,10 +38,7 @@ class MessageChannel extends EventEmitter
     open: (url) ->
         if url
             @url = url
-#        @wsChannel = PluginLoader.getPlugin().createWebSocket url
         @wsChannel = @_createWebsocket @url
-        console.error @wsChannel
-#        @wsChannel = new WsWrapper PluginLoader, @url
 
         @wsChannel.onopen = (event) =>
             @emit 'open', event

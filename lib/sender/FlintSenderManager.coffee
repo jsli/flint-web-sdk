@@ -280,7 +280,7 @@ class FlintSenderManager extends EventEmitter
 
     _createMessageChannel: ->
         if not @defMessageChannel
-            @defMessageChannel = new SenderMessageChannel FlintConstants.DEFAULT_CHANNEL_NAME
+            @defMessageChannel = new SenderMessageChannel PluginLoader, FlintConstants.DEFAULT_CHANNEL_NAME
             @defMessageChannel.on 'open', () =>
                 console.log 'sender message channel open!!!'
             @defMessageChannel.on 'close', () =>
