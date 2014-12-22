@@ -28,18 +28,19 @@ class XhrWrapper
 
         if @xhrObj.setOnReadyStateChangeCallback
             @proxy = true
-            console.error '################proxy'
 
         if @proxy
-            callback = =>
-                @xhrObj.readyState = @xhrObj.getReadyState()
-                @xhrObj.status = @xhrObj.getStatus()
-                @xhrObj.statusText = @xhrObj.getStatusText()
-                @xhrObj.responseText = Base64.decode @xhrObj.getResponseText()
-                if @xhrObj.onreadystatechange
-                    @xhrObj.onreadystatechange()
-            callback.bind @
-            @xhrObj.setOnReadyStateChangeCallback callback
+            _callback = =>
+                readyState = @xhrObj.getReadyState()
+                if readyState is 4
+                    @xhrObj.readyState = readyState
+                    @xhrObj.status = @xhrObj.getStatus()
+                    respondText = @xhrObj.getResponseText()
+                    @xhrObj.responseText = Base64.decode respondText
+                    if @xhrObj.onreadystatechange
+                        @xhrObj.onreadystatechange()
+            #            _callback.bind @
+            @xhrObj.setOnReadyStateChangeCallback _callback
 
     #
     # callback: (statusCode, responseText) =>
@@ -48,15 +49,14 @@ class XhrWrapper
         if not @proxy
             @xhrObj.timeout = 3 * 1000
         @xhrObj.open method, url
+
         if headers
             for key, value of headers
                 @xhrObj.setRequestHeader key, value
 
         @xhrObj.onreadystatechange = =>
-            console.info '1received: ', @xhrObj.getResponseText()
-            console.error 'ready state ---------- ', @xhrObj.readyState
             if @xhrObj.readyState is 4
-                console.info 'received: ', @xhrObj.responseText
+                console.error ' received:\n', @xhrObj.responseText
                 callback? @xhrObj.status, @xhrObj.responseText
 
         if not @proxy

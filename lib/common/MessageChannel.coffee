@@ -37,10 +37,12 @@ class MessageChannel extends EventEmitter
         return @name
 
     open: (url) ->
-        if not url
+        if url
             @url = url
 #        @wsChannel = PluginLoader.getPlugin().createWebSocket url
-        @wsChannel = new WsWrapper PluginLoader, @url
+        @wsChannel = @_createWebsocket @url
+        console.error @wsChannel
+#        @wsChannel = new WsWrapper PluginLoader, @url
 
         @wsChannel.onopen = (event) =>
             @emit 'open', event
@@ -51,6 +53,9 @@ class MessageChannel extends EventEmitter
         @_initOnMessage()
 
         @opened = true
+
+    _createWebsocket: (url) ->
+        return new WebSocket url
 
     _initOnMessage: ->
         @wsChannel.onmessage = (event) =>
