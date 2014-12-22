@@ -15,7 +15,6 @@
 #
 
 MessageChannel = require '../common/MessageChannel'
-WsWrapper = require './WsWrapper'
 
 class SenderMessageChannel extends MessageChannel
 
@@ -23,9 +22,9 @@ class SenderMessageChannel extends MessageChannel
         super name, url
 
     _createWebsocket: (url) ->
-        ws = new WsWrapper @pluginLoader, url
+        ws = @pluginLoader.getPlugin().createWebSocket(url)
         if not ws
-            throw 'createWebSocket failed!!!'
+            throw 'SenderMessageChannel createWebSocket failed!!!'
         return ws
 
 module.exports = SenderMessageChannel

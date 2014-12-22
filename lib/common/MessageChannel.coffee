@@ -15,7 +15,6 @@
 #
 
 EventEmitter = require 'eventemitter3'
-PluginLoader = require '../plugin/PluginLoader'
 
 class MessageChannel extends EventEmitter
 

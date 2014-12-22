@@ -275,8 +275,24 @@ class FlintSenderManager extends EventEmitter
     # callback = => (statusCode, responseText)
     _request: (method, url, headers, data, callback) ->
         console.log 'request: method -> ', method, ', url -> ', url, ', headers -> ', headers
-        xhr = new XhrWrapper PluginLoader
-        xhr.request method, url, headers, data, callback
+        xhr = PluginLoader.getPlugin().createXMLHttpRequest()
+        if not xhr
+            throw 'request: failed'
+
+        xhr.open method, url
+        if headers
+            for key, value of headers
+                xhr.setRequestHeader key, value
+
+        xhr.onreadystatechange = =>
+            if xhr.readyState is 4
+                console.log 'FlintSenderManager received:\n', xhr.responseText
+                callback? xhr.status, xhr.responseText
+
+        if data
+            xhr.send JSON.stringify(data)
+        else
+            xhr.send ''
 
     _createMessageChannel: ->
         if not @defMessageChannel

@@ -17,10 +17,10 @@
 #
 # It's not a real plugin, it just create some object like a plugin does.
 #
-class FakePlugin
+class FfosPlugin
 
     constructor: ->
-        console.log 'create FakePlugin'
+        console.log 'create FfosPlugin'
 
     createWebSocket: (url) ->
         return new WebSocket(url)
@@ -29,15 +29,19 @@ class FakePlugin
         return new XMLHttpRequest()
 
     createUdpServer: (port, options) ->
+        # TODO:
         throw 'Not Implemented'
 
     createUdpClient: (ip, port, options) ->
+        # TODO:
         throw 'Not Implemented'
 
     createSSDPResponder: (options) ->
+        # TODO:
         throw 'Not Implemented'
 
     createMDNSResponder: (options) ->
+        # TODO:
         throw 'Not Implemented'
 
-module.exports = FakePlugin
+module.exports = FfosPlugin

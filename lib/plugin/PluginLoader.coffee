@@ -14,32 +14,37 @@
 # limitations under the License.
 #
 
-NPAPIPlugin = require './NPAPIPlugin'
+NPAPIPlugin = require './NPAPI/NPAPIPlugin'
 FakePlugin = require './FakePlugin'
+FfosPlugin = require './FfosPlugin'
 Platform = require '../common/Platform'
 
 class PluginLoader
 
     @DEBUG = false
 
+    @plugin = null
+
     @getPlugin: ->
         if PluginLoader.DEBUG
-            return FakePlugin.getPlugin()
+            PluginLoader.plugin = new FakePlugin()
 
-        # load order:
-        #   browser specical
-        #   browser plugin
-        #   npapi
-        #   common
-        platform = Platform.getPlatform()
-        console.info 'Platform is : ', platform.browser
-        plugin = null
-        switch platform.browser
-            when 'ffos'
-                plugin = FakePlugin.getPlugin()
-            when 'firefox', 'chrome', 'safari', 'msie'
-                plugin = NPAPIPlugin.getPlugin()
-            else
-                plugin = FakePlugin.getPlugin()
+        if not PluginLoader.plugin
+            # load order:
+            #   browser specical
+            #   browser plugin
+            #   npapi
+            #   common
+            platform = Platform.getPlatform()
+            console.info 'Platform is : ', platform.browser
+            switch platform.browser
+                when 'ffos'
+                    PluginLoader.plugin = new FfosPlugin()
+                when 'firefox', 'chrome', 'safari', 'msie'
+                    PluginLoader.plugin = new NPAPIPlugin()
+                else
+                    PluginLoader.plugin = new FakePlugin()
+
+        return PluginLoader.plugin
 
 module.exports = PluginLoader
