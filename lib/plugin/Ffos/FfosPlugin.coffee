@@ -28,14 +28,6 @@ class FfosPlugin
     createXMLHttpRequest: ->
         return new XMLHttpRequest()
 
-    createUdpServer: (port, options) ->
-        # TODO:
-        throw 'Not Implemented'
-
-    createUdpClient: (ip, port, options) ->
-        # TODO:
-        throw 'Not Implemented'
-
     createSSDPResponder: (options) ->
         # TODO:
         throw 'Not Implemented'

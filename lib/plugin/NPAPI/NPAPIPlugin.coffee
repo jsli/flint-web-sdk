@@ -51,14 +51,6 @@ class NPAPIPlugin
         xhrObj = @plugin.createXMLHttpRequest()
         return new NPAPIXhr(xhrObj)
 
-    # create UdpServer on FFOS
-    createUdpServer: (port, options) ->
-        throw 'Not Implemented'
-
-    # create UdpClient on FFOS
-    createUdpClient: (ip, port, options) ->
-        throw 'Not Implemented'
-
     createSSDPResponder: (options) ->
         # TODO:
         # method:

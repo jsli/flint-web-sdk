@@ -16,28 +16,91 @@
 
 EventEmitter = require 'eventemitter3'
 PluginLoader = require '../../plugin/PluginLoader'
+SSDPDevice = require './SSDPDevice'
 
 class SSDPManager extends EventEmitter
 
     constructor: ->
+        @devices = {}
+
         options =
             st: 'urn:dial-multiscreen-org:service:dial:1'
         @ssdp = PluginLoader.getPlugin().createSSDPResponder options
-        @ssdp.addEventListener 'serviceFound', (data) =>
-            console.error 'ssdp found: -> ', data
-        @ssdp.addEventListener 'serviceLost', (data) =>
-            console.error 'ssdp lost: -> ', data
-        @ssdp.search "urn:dial-multiscreen-org:service:dial:1"
 
-#        @ssdp.on 'devicealive', (device) =>
-#            @emit 'adddevice', device
-#        @ssdp.on 'devicebyebye', (uniqueId) =>
-#            @emit 'removedevice', uniqueId
+        # 'data' is the location of device description
+        @ssdp.addEventListener 'serviceFound', (url) =>
+#            console.error 'ssdp found: -> ', url
+            if not @devices[url]
+                # make @devices[url] non-null immediately
+                @devices[url] = url
+                @_fetchDeviceDesc url
+            else
+                @devices[url].triggerTimer()
+
+        @ssdp.addEventListener 'serviceLost', (url) =>
+#            console.error 'ssdp lost: -> ', url
+            if @devices[url]
+                device = @devices[url]
+                @emit 'removedevice', device
+                device.clear()
+                delete @devices[url]
 
     start: ->
         @ssdp.start()
 
     stop: ->
         @ssdp.stop()
+
+    _fetchDeviceDesc: (url) ->
+        xhr = PluginLoader.getPlugin().createXMLHttpRequest()
+        if not xhr
+            throw '_fetchDeviceDesc: failed'
+
+        xhr.open 'GET', url
+        xhr.onreadystatechange = =>
+            if xhr.readyState is 4
+#                console.log 'SSDPManager received:\n', xhr.responseText
+                @_parseDeviceDesc xhr.responseText, url
+        xhr.send ''
+
+    _parseDeviceDesc: (data, url) ->
+        try
+            xml = null
+            if window.DOMParser # Standard
+                parser = new DOMParser()
+                xml = parser.parseFromString data, "text/xml"
+            else # for IE
+                xml = new ActiveXObject "Microsoft.XMLDOM"
+                xml.async = "false"
+                xml.loadXML data
+
+            urlBase = null
+            urls = xml.querySelectorAll 'URLBase'
+            if urls and urls.length > 0
+                urlBase = urls[0].innerHTML
+
+            devices = xml.querySelectorAll 'device'
+            if devices.length > 0
+                @_parseSingleDeviceDesc devices[0], urlBase, url
+        catch e
+            console.error e
+
+    _parseSingleDeviceDesc: (deviceNode, urlBase, url) ->
+        deviceType = deviceNode.querySelector('deviceType').innerHTML
+        udn = deviceNode.querySelector("UDN").innerHTML
+        friendlyName = deviceNode.querySelector('friendlyName').innerHTML
+        manufacturer = deviceNode.querySelector('manufacturer').innerHTML
+        modelName = deviceNode.querySelector('modelName').innerHTML
+        device = new SSDPDevice
+            uniqueId: udn
+            urlBase: urlBase
+            deviceType: deviceType
+            udn: udn
+            friendlyName: friendlyName
+            manufacturer: manufacturer
+            modelName: modelName
+        device.triggerTimer()
+        @devices[url] = device
+        @emit 'adddevice', device
 
 module.exports = SSDPManager

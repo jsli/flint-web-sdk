@@ -16,7 +16,7 @@
 
 NPAPIPlugin = require './NPAPI/NPAPIPlugin'
 FakePlugin = require './FakePlugin'
-FfosPlugin = require './FfosPlugin'
+FfosPlugin = require './Ffos/FfosPlugin'
 Platform = require '../common/Platform'
 
 class PluginLoader

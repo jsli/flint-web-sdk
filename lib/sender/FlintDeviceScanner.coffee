@@ -57,15 +57,15 @@ class FlintDeviceScanner extends EventEmitter
     _addDevice: (device) ->
         uniqueId = device.getUniqueId()
         if not @devices[uniqueId]
+            console.log 'found device: ', device.getName()
             @devices[uniqueId] = device
             device.on 'devicetimeout', (_device) =>
                 @_removeDevice _device.getUniqueId()
             @emit 'devicechanged', @devices
-        @devices[uniqueId]?.triggerTimer()
 
     _removeDevice: (uniqueId) ->
         if @devices[uniqueId]
-            @devices[uniqueId].clear()
+            console.warn 'found device: ', @devices[uniqueId].getName()
             delete @devices[uniqueId]
             @emit 'devicechanged', @devices
 

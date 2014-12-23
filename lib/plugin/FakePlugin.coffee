@@ -28,12 +28,6 @@ class FakePlugin
     createXMLHttpRequest: ->
         return new XMLHttpRequest()
 
-    createUdpServer: (port, options) ->
-        throw 'Not Implemented'
-
-    createUdpClient: (ip, port, options) ->
-        throw 'Not Implemented'
-
     createSSDPResponder: (options) ->
         throw 'Not Implemented'
 
